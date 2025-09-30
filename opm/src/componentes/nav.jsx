@@ -10,7 +10,7 @@ const Nav=()=>(
         <Link><p className="text">Carrito</p></Link>
         <Link><p className="text">Ubicacion</p></Link>
         <Link><p className="text">Pedido</p></Link>
-        <Link><p className="text">Registro/Inicio</p></Link>
+        <Link to='/R_I'><p className="text">Registro/Inicio</p></Link>
     </div>
 )
 export default Nav

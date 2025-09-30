@@ -1,6 +1,5 @@
 const express=require('express')
 const bodyParser=require('body-parser')
-const path=require('path')
 var mongoose=require('mongoose')
 const cors=require('cors')
 

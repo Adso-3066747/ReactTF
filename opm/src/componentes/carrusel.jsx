@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useTransition, animated, useSpringRef } from '@react-spring/web'
 import  './styles/module.css'
 
-const tenis=<img src='https://i.imgur.com/Vuk4IFQ_d.jpeg?maxwidth=520&shape=thumb&fidelity=high'/>
-const balon=<img src='https://i.imgur.com/PKlH0WP_d.png?maxwidth=520&shape=thumb&fidelity=high'/>
-const canilleras=<img src='https://i.imgur.com/Flj3kWa_d.png?maxwidth=520&shape=thumb&fidelity=high'/>
-const pages = [
-  ({ style }) => <animated.div style={style}>{tenis}</animated.div>,
-  ({ style }) => <animated.div style={style}>{balon}</animated.div>,
-  ({ style }) => <animated.div style={style}>{canilleras}</animated.div>,
-]
 
 export default function App() {
   const [index, setIndex] = useState(0)
+  const [imagenes,SetImagenes]=useState([])
+  const [pages,setPages]=useState([])
+
   const transRef = useSpringRef()
   const transitions = useTransition(index, {
     ref: transRef,
@@ -22,21 +17,45 @@ export default function App() {
     leave: { opacity: 0, transform: 'translate3d(-20%,0,0)' },
     config:{tension: 170, friction: 26}
   })
+  useEffect(()=>{
+    const IP=async ()=>{
+    try{
+      const res = await fetch('http://localhost:5000/obtener')
+      const datos=await res.json()
+      SetImagenes(datos)
+      const CI=datos.map(comino=>(style)=>(
+        <animated.div style={style}>
+          <img src={comino.endpoint} alt={comino.Nombre} style={{height:'auto'}}/>
+        </animated.div>
+      ))
+      setPages(CI)
+    }
+    catch(err){
+      console.error(err)
+    }
+  }
+  IP()
+  },[])
+
+
   useEffect(() => {
     transRef.start()
   }, [index,transRef])
 
   useEffect(()=>{
-    const intervalo=setInterval(()=>{
+    if(pages.length>0){
+      const intervalo=setInterval(()=>{
       setIndex(prev=>(prev+1)%pages.length)
     },3000)
     return ()=>clearInterval(intervalo)
-  },[])
+    }
+  },[pages.length])
   return (
     <div  className='imagenes'>
       {transitions((style, i) => {
         const Page = pages[i]
-        return <Page style={style} />
+        if(!Page) return null
+        return <Page key={i} style={style} />
       })}
     </div>
   )
